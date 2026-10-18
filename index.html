@@ -134,15 +134,27 @@ function hablar(texto){
   u.lang='es-ES'; u.rate=0.9; u.pitch=1.1;
   speechSynthesis.speak(u);
 }
+// Frase hablada: primero intenta sonidos/<id>-voz.mp3 (ElevenLabs);
+// si no existe o falla, usa la voz del móvil.
+function decirFrase(a){
+  const frase = a.nombre + ' hace ' + a.onom;
+  const voz = a.voz || (a.file ? a.file.replace(/\.mp3$/i, '-voz.mp3') : null);
+  if(!voz){ hablar(frase); return; }
+  const au = new Audio(voz); audioActual = au;
+  au.onerror = ()=> hablar(frase);
+  au.play().catch(()=> hablar(frase));
+}
 function sonar(a){
   ultimo = a; mostrar(a);
   if(audioActual){ audioActual.pause(); audioActual=null; }
+  if('speechSynthesis' in window) speechSynthesis.cancel();
   if(a.file){
     const au = new Audio(a.file); audioActual = au;
-    au.onended = ()=> hablar(a.nombre + ' hace ' + a.onom);
-    au.play().catch(()=> hablar(a.nombre + ' hace ' + a.onom));
+    au.onended = ()=> decirFrase(a);
+    au.onerror = ()=> decirFrase(a);
+    au.play().catch(()=> decirFrase(a));
   } else {
-    hablar(a.nombre + ' hace ' + a.onom);
+    decirFrase(a);
   }
 }
 function porId(id){ return animales.find(x=>x.id===id); }
