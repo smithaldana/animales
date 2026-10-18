@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#1b1f2a">
+<title>Animales NFC</title>
+<style>
+  :root{--bg:#1b1f2a;--card:#262b3a;--txt:#f4f4f6;--mut:#9aa0b4;--ok:#43c66b;--warn:#f5b53f;--err:#ef5b5b;--acc:#5b8def}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  body{display:flex;flex-direction:column;min-height:100%}
+  header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  header h1{font-size:18px;margin:0}
+  #estado{font-size:13px;color:var(--mut)}
+  #estado.ok{color:var(--ok)} #estado.err{color:var(--err)} #estado.warn{color:var(--warn)}
+  main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center}
+  #emoji{font-size:min(55vw,260px);line-height:1;transition:transform .15s}
+  #emoji.pop{transform:scale(1.15)}
+  #nombre{font-size:34px;font-weight:700;margin:12px 0 4px}
+  #onom{font-size:22px;color:var(--mut)}
+  .big{width:100%;max-width:420px;padding:18px;border:0;border-radius:16px;font-size:20px;font-weight:700;background:var(--acc);color:#fff;margin-top:20px}
+  .big:active{opacity:.8}
+  footer{padding:12px 16px 24px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  footer button{padding:10px 14px;border:0;border-radius:12px;background:var(--card);color:var(--txt);font-size:15px}
+  footer button.on{background:var(--warn);color:#000}
+  #panel{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:flex-end;justify-content:center}
+  #panel.show{display:flex}
+  #sheet{background:var(--card);width:100%;max-width:560px;max-height:85vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px}
+  #sheet h2{margin:0 0 10px;font-size:17px}
+  .fila{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid #333a4d}
+  .fila .e{font-size:34px;width:46px;text-align:center}
+  .fila .n{flex:1;text-align:left}
+  .fila .n small{display:block;color:var(--mut)}
+  .fila button{padding:8px 12px;border:0;border-radius:10px;background:var(--acc);color:#fff}
+  .fila button.del{background:#444c63}
+  .add{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .add input{padding:10px;border-radius:10px;border:1px solid #444c63;background:#1b1f2a;color:var(--txt);font-size:15px}
+  .add input.full{grid-column:1/-1}
+  .add button{grid-column:1/-1;padding:12px;border:0;border-radius:12px;background:var(--ok);color:#000;font-weight:700}
+  #cerrar{width:100%;padding:12px;margin-top:10px;border:0;border-radius:12px;background:#444c63;color:#fff}
+  #log{font-size:12px;color:var(--mut);max-width:420px;margin-top:14px;word-break:break-all}
+</style>
+</head>
+<body>
+<header>
+  <h1>🐾 Animales NFC</h1>
+  <span id="estado">Pulsa Empezar</span>
+</header>
+
+<main>
+  <div id="emoji">🐮</div>
+  <div id="nombre">¡Hola!</div>
+  <div id="onom">Acerca una tarjeta</div>
+  <button class="big" id="btnStart">▶ Empezar</button>
+  <div id="log"></div>
+</main>
+
+<footer>
+  <button id="btnAsignar">🏷️ Asignar tarjeta</button>
+  <button id="btnLista">📋 Animales</button>
+  <button id="btnRepetir">🔁 Repetir</button>
+</footer>
+
+<div id="panel">
+  <div id="sheet">
+    <h2 id="sheetTitulo">Animales</h2>
+    <div id="lista"></div>
+    <div class="add">
+      <input id="aEmoji" placeholder="Emoji (🚗)">
+      <input id="aNombre" placeholder="Nombre (coche)">
+      <input id="aOnom" class="full" placeholder="Sonido hablado (brum brum)">
+      <input id="aFile" class="full" placeholder="Archivo mp3 opcional (sonidos/coche.mp3)">
+      <button id="btnAdd">+ Añadir</button>
+    </div>
+    <button id="cerrar">Cerrar</button>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   ANIMALES NFC – lector de tarjetas para niños (Web NFC)
+   ----------------------------------------------------------
+   · Funciona en Chrome para Android, servido por HTTPS.
+   · Cada tarjeta se reconoce de dos formas:
+       1) Texto NDEF grabado en la tarjeta:  animal:vaca
+       2) Si no lleva texto, por su número de serie (UID),
+          que se asigna desde el botón "Asignar tarjeta".
+   · Sonidos: si existe el mp3 indicado en "file" se reproduce;
+     si no, el móvil lo dice con voz (SpeechSynthesis).
+   · Si se abre con ?a=vaca (tarjeta con URL grabada), suena
+     directamente al pulsar Empezar.
+   ========================================================== */
+
+const ANIMALES_BASE = [
+  {id:'vaca',    emoji:'🐮', nombre:'La vaca',    onom:'muuu',        file:'sonidos/vaca.mp3'},
+  {id:'perro',   emoji:'🐶', nombre:'El perro',   onom:'guau guau',   file:'sonidos/perro.mp3'},
+  {id:'gato',    emoji:'🐱', nombre:'El gato',    onom:'miau',        file:'sonidos/gato.mp3'},
+  {id:'cerdo',   emoji:'🐷', nombre:'El cerdo',   onom:'oinc oinc',   file:'sonidos/cerdo.mp3'},
+  {id:'oveja',   emoji:'🐑', nombre:'La oveja',   onom:'beee',        file:'sonidos/oveja.mp3'},
+  {id:'gallo',   emoji:'🐓', nombre:'El gallo',   onom:'kikirikí',    file:'sonidos/gallo.mp3'},
+  {id:'pato',    emoji:'🦆', nombre:'El pato',    onom:'cuac cuac',   file:'sonidos/pato.mp3'},
+  {id:'caballo', emoji:'🐴', nombre:'El caballo', onom:'hiiii',       file:'sonidos/caballo.mp3'},
+  {id:'leon',    emoji:'🦁', nombre:'El león',    onom:'grrroar',     file:'sonidos/leon.mp3'},
+  {id:'elefante',emoji:'🐘', nombre:'El elefante',onom:'tuuuu',       file:'sonidos/elefante.mp3'},
+  {id:'rana',    emoji:'🐸', nombre:'La rana',    onom:'croac croac', file:'sonidos/rana.mp3'},
+  {id:'coche',   emoji:'🚗', nombre:'El coche',   onom:'brum brum',   file:'sonidos/coche.mp3'},
+];
+
+const LS_ANIMALES = 'nfc_animales', LS_MAPA = 'nfc_mapa';
+let animales = cargar(LS_ANIMALES, ANIMALES_BASE);
+let mapa     = cargar(LS_MAPA, {});          // UID -> id
+let ultimo   = null, modoAsignar = false, idPendiente = null, audioActual = null;
+
+function cargar(k, def){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch(e){ return def; } }
+function guardar(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+const $ = s => document.querySelector(s);
+const estado = (t, cls='') => { $('#estado').textContent=t; $('#estado').className=cls; };
+const log = t => { $('#log').textContent = t; };
+
+/* ---------- Reproducir ---------- */
+function mostrar(a){
+  $('#emoji').textContent = a.emoji;
+  $('#nombre').textContent = a.nombre;
+  $('#onom').textContent = a.onom;
+  $('#emoji').classList.add('pop'); setTimeout(()=>$('#emoji').classList.remove('pop'),200);
+  if(navigator.vibrate) navigator.vibrate(60);
+}
+function hablar(texto){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(texto);
+  u.lang='es-ES'; u.rate=0.9; u.pitch=1.1;
+  speechSynthesis.speak(u);
+}
+function sonar(a){
+  ultimo = a; mostrar(a);
+  if(audioActual){ audioActual.pause(); audioActual=null; }
+  if(a.file){
+    const au = new Audio(a.file); audioActual = au;
+    au.onended = ()=> hablar(a.nombre + ' hace ' + a.onom);
+    au.play().catch(()=> hablar(a.nombre + ' hace ' + a.onom));
+  } else {
+    hablar(a.nombre + ' hace ' + a.onom);
+  }
+}
+function porId(id){ return animales.find(x=>x.id===id); }
+
+/* ---------- Identificar tarjeta ---------- */
+function resolver(uid, textos){
+  // 1) texto NDEF "animal:xxx"
+  for(const t of textos){
+    const m = t.match(/^animal:([a-z0-9_-]+)/i);
+    if(m){ const a = porId(m[1].toLowerCase()); if(a) return a; }
+  }
+  // 2) UID asignado
+  if(uid && mapa[uid]) return porId(mapa[uid]);
+  return null;
+}
+
+function onTag(uid, textos){
+  log('UID: ' + (uid||'?') + (textos.length? ' · texto: '+textos.join(' | '):''));
+  if(modoAsignar && idPendiente && uid){
+    mapa[uid] = idPendiente; guardar(LS_MAPA, mapa);
+    const a = porId(idPendiente);
+    estado('Tarjeta asignada a ' + a.nombre, 'ok');
+    modoAsignar=false; idPendiente=null; $('#btnAsignar').classList.remove('on');
+    sonar(a); return;
+  }
+  const a = resolver(uid, textos);
+  if(a){ estado('Leyendo…', 'ok'); sonar(a); }
+  else { estado('Tarjeta sin asignar', 'warn'); $('#emoji').textContent='❓'; $('#nombre').textContent='¿Quién soy?'; $('#onom').textContent='Usa "Asignar tarjeta"'; hablar('Esta tarjeta todavía no tiene animal'); }
+}
+
+/* ---------- Web NFC ---------- */
+async function empezar(){
+  // desbloquea audio y voz con el gesto del usuario
+  hablar(' ');
+  const url = new URL(location.href);
+  const directo = url.searchParams.get('a');
+  if(directo && porId(directo)) sonar(porId(directo));
+
+  if(!('NDEFReader' in window)){
+    estado('Este navegador no tiene Web NFC', 'err');
+    log('Usa Chrome en Android. En iPhone, graba una URL con ?a=vaca en la tarjeta.');
+    $('#btnStart').style.display='none';
+    return;
+  }
+  try{
+    const reader = new NDEFReader();
+    await reader.scan();
+    estado('Escuchando tarjetas…', 'ok');
+    $('#btnStart').style.display='none';
+    reader.onreadingerror = () => estado('No se pudo leer, inténtalo de nuevo', 'warn');
+    reader.onreading = ev => {
+      const textos = [];
+      for(const r of ev.message.records){
+        if(r.recordType==='text'){
+          try{ textos.push(new TextDecoder(r.encoding||'utf-8').decode(r.data)); }catch(e){}
+        } else if(r.recordType==='url'){
+          try{ const u = new TextDecoder().decode(r.data); const m=u.match(/[?&]a=([a-z0-9_-]+)/i); if(m) textos.push('animal:'+m[1]); }catch(e){}
+        }
+      }
+      onTag(ev.serialNumber || null, textos);
+    };
+  }catch(e){
+    estado('NFC no disponible: ' + e.message, 'err');
+  }
+}
+
+/* ---------- UI ---------- */
+$('#btnStart').onclick = empezar;
+$('#btnRepetir').onclick = ()=> ultimo && sonar(ultimo);
+
+$('#btnAsignar').onclick = ()=>{
+  if(modoAsignar){ modoAsignar=false; idPendiente=null; $('#btnAsignar').classList.remove('on'); estado('Escuchando tarjetas…','ok'); return; }
+  abrirPanel(true);
+};
+$('#btnLista').onclick = ()=> abrirPanel(false);
+$('#cerrar').onclick = ()=> $('#panel').classList.remove('show');
+
+function abrirPanel(asignando){
+  $('#sheetTitulo').textContent = asignando ? 'Elige el animal y luego acerca la tarjeta' : 'Animales (toca para probar)';
+  const L = $('#lista'); L.innerHTML='';
+  animales.forEach(a=>{
+    const d=document.createElement('div'); d.className='fila';
+    const n = Object.values(mapa).filter(x=>x===a.id).length;
+    d.innerHTML = `<div class="e">${a.emoji}</div><div class="n">${a.nombre}<small>${a.onom}${n?' · '+n+' tarjeta'+(n>1?'s':''):''}</small></div>`;
+    const b=document.createElement('button');
+    b.textContent = asignando ? 'Elegir' : '▶';
+    b.onclick = ()=>{
+      if(asignando){
+        modoAsignar=true; idPendiente=a.id; $('#btnAsignar').classList.add('on');
+        estado('Acerca la tarjeta para ' + a.nombre, 'warn');
+        $('#panel').classList.remove('show');
+      } else sonar(a);
+    };
+    d.appendChild(b);
+    if(!asignando){
+      const x=document.createElement('button'); x.textContent='🗑'; x.className='del';
+      x.onclick=()=>{ if(confirm('¿Borrar '+a.nombre+'?')){ animales=animales.filter(z=>z.id!==a.id); for(const k in mapa) if(mapa[k]===a.id) delete mapa[k]; guardar(LS_ANIMALES,animales); guardar(LS_MAPA,mapa); abrirPanel(false);} };
+      d.appendChild(x);
+    }
+    L.appendChild(d);
+  });
+  $('#panel').classList.add('show');
+}
+
+$('#btnAdd').onclick = ()=>{
+  const nombre=$('#aNombre').value.trim(), emoji=$('#aEmoji').value.trim()||'⭐', onom=$('#aOnom').value.trim(), file=$('#aFile').value.trim();
+  if(!nombre) return alert('Pon un nombre');
+  const id = nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-');
+  if(porId(id)) return alert('Ya existe');
+  animales.push({id, emoji, nombre: nombre.charAt(0).toUpperCase()+nombre.slice(1), onom: onom||nombre, file: file||null});
+  guardar(LS_ANIMALES, animales);
+  ['#aNombre','#aEmoji','#aOnom','#aFile'].forEach(s=>$(s).value='');
+  abrirPanel(false);
+};
+</script>
+</body>
+</html>
