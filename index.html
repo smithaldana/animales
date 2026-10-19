@@ -104,11 +104,20 @@ const ANIMALES_BASE = [
   {id:'leon',    emoji:'🦁', nombre:'El león',    onom:'grrroar',     file:'sonidos/leon.mp3'},
   {id:'elefante',emoji:'🐘', nombre:'El elefante',onom:'tuuuu',       file:'sonidos/elefante.mp3'},
   {id:'rana',    emoji:'🐸', nombre:'La rana',    onom:'croac croac', file:'sonidos/rana.mp3'},
+  {id:'gallina', emoji:'🐔', nombre:'La gallina', onom:'coc coc',     file:'sonidos/gallina.mp3'},
+  {id:'mono',    emoji:'🐵', nombre:'El mono',    onom:'uh uh ah ah', file:'sonidos/mono.mp3'},
+  {id:'pajaro',  emoji:'🐦', nombre:'El pájaro',  onom:'pío pío',     file:'sonidos/pajaro.mp3'},
+  {id:'buho',    emoji:'🦉', nombre:'El búho',    onom:'uh uh',       file:'sonidos/buho.mp3'},
+  {id:'lobo',    emoji:'🐺', nombre:'El lobo',    onom:'auuuu',       file:'sonidos/lobo.mp3'},
+  {id:'burro',   emoji:'🫏', nombre:'El burro',   onom:'iii-aaa',     file:'sonidos/burro.mp3'},
+  {id:'abeja',   emoji:'🐝', nombre:'La abeja',   onom:'bzzz',        file:'sonidos/abeja.mp3'},
   {id:'coche',   emoji:'🚗', nombre:'El coche',   onom:'brum brum',   file:'sonidos/coche.mp3'},
 ];
 
 const LS_ANIMALES = 'nfc_animales', LS_MAPA = 'nfc_mapa';
 let animales = cargar(LS_ANIMALES, ANIMALES_BASE);
+// Incorporar animales nuevos de la lista base que aún no estén guardados
+ANIMALES_BASE.forEach(b=>{ if(!animales.some(a=>a.id===b.id)) animales.push({...b}); });
 let mapa     = cargar(LS_MAPA, {});          // UID -> id
 let ultimo   = null, modoAsignar = false, idPendiente = null, audioActual = null;
 
