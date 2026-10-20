@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#1b1f2a">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
 <title>Animales NFC</title>
 <style>
   :root{--bg:#1b1f2a;--card:#262b3a;--txt:#f4f4f6;--mut:#9aa0b4;--ok:#43c66b;--warn:#f5b53f;--err:#ef5b5b;--acc:#5b8def}
@@ -40,6 +43,15 @@
   .add button{grid-column:1/-1;padding:12px;border:0;border-radius:12px;background:var(--ok);color:#000;font-weight:700}
   #cerrar{width:100%;padding:12px;margin-top:10px;border:0;border-radius:12px;background:#444c63;color:#fff}
   #log{font-size:12px;color:var(--mut);max-width:420px;margin-top:14px;word-break:break-all}
+  /* Modo niño: pantalla negra, sin nada que mirar */
+  #nino{position:fixed;inset:0;background:#000;display:none;z-index:50;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  #nino.show{display:block}
+  #nino .pista{position:absolute;left:0;right:0;bottom:18px;text-align:center;color:#222;font-size:12px}
+  #nino .aro{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:6px solid #fff;opacity:0;transform:scale(.6)}
+  #nino .aro.pulso{animation:aro .7s ease-out}
+  @keyframes aro{0%{opacity:.5;transform:scale(.6)}100%{opacity:0;transform:scale(1.6)}}
+  #nino .salir{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#555;font-size:14px;opacity:0;transition:opacity .3s}
+  #nino.presionando .salir{opacity:1}
 </style>
 </head>
 <body>
@@ -60,7 +72,14 @@
   <button id="btnAsignar">🏷️ Asignar tarjeta</button>
   <button id="btnLista">📋 Animales</button>
   <button id="btnRepetir">🔁 Repetir</button>
+  <button id="btnNino">🌙 Modo niño</button>
 </footer>
+
+<div id="nino">
+  <div class="aro" id="aro"></div>
+  <div class="salir">Mantén pulsado para salir…</div>
+  <div class="pista">Modo niño · mantén pulsado 3 s para salir</div>
+</div>
 
 <div id="panel">
   <div id="sheet">
@@ -130,6 +149,7 @@ const log = t => { $('#log').textContent = t; };
 
 /* ---------- Reproducir ---------- */
 function mostrar(a){
+  const aro=$('#aro'); aro.classList.remove('pulso'); void aro.offsetWidth; aro.classList.add('pulso');
   $('#emoji').textContent = a.emoji;
   $('#nombre').textContent = a.nombre;
   $('#onom').textContent = a.onom;
@@ -278,6 +298,41 @@ $('#btnAdd').onclick = ()=>{
   ['#aNombre','#aEmoji','#aOnom','#aFile'].forEach(s=>$(s).value='');
   abrirPanel(false);
 };
+
+/* ---------- Modo niño ---------- */
+let wakeLock=null;
+async function pedirWakeLock(){
+  try{ if('wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release',()=>{wakeLock=null;}); } }catch(e){}
+}
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && $('#nino').classList.contains('show')) pedirWakeLock(); });
+
+function entrarNino(){
+  $('#nino').classList.add('show');
+  pedirWakeLock();
+  if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{});
+  if(screen.orientation && screen.orientation.lock) screen.orientation.lock('portrait').catch(()=>{});
+}
+function salirNino(){
+  $('#nino').classList.remove('show','presionando');
+  if(wakeLock){ wakeLock.release().catch(()=>{}); wakeLock=null; }
+  if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+}
+$('#btnNino').onclick=()=>{
+  if($('#btnStart').style.display!=='none'){ alert('Pulsa primero "Empezar" para activar el NFC.'); return; }
+  entrarNino();
+};
+// salir con pulsación larga de 3 s
+let tPress=null;
+const nino=$('#nino');
+const inicioPress=e=>{ e.preventDefault(); nino.classList.add('presionando'); tPress=setTimeout(salirNino,3000); };
+const finPress=()=>{ nino.classList.remove('presionando'); clearTimeout(tPress); tPress=null; };
+nino.addEventListener('touchstart',inicioPress,{passive:false});
+nino.addEventListener('touchend',finPress); nino.addEventListener('touchcancel',finPress);
+nino.addEventListener('mousedown',inicioPress); nino.addEventListener('mouseup',finPress); nino.addEventListener('mouseleave',finPress);
+nino.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* ---------- PWA ---------- */
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
 </script>
 </body>
 </html>
