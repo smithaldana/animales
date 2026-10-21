@@ -274,8 +274,11 @@ function resolver(uid, textos){
   if(uid && mapa[uid]) return porId(mapa[uid]);
   return null;
 }
+const vistas = new Set();   // UIDs leídos en esta sesión (para comprobar lotes)
 function onTag(uid, textos){
-  log('UID: ' + (uid||'?') + (textos.length? ' · texto: '+textos.join(' | '):''));
+  let marca='';
+  if(uid){ if(vistas.has(uid)) marca=' · ⚠️ REPETIDA'; else { vistas.add(uid); marca=' · nueva nº '+vistas.size; } }
+  log('UID: ' + (uid||'?') + marca + (textos.length? ' · texto: '+textos.join(' | '):''));
   if(modoAsignar && idPendiente && uid){
     mapa[uid] = idPendiente; guardar(LS_MAPA, mapa);
     const a = porId(idPendiente);
