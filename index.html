@@ -241,28 +241,30 @@ function pararTodo(){
   if(audioActual){ audioActual.pause(); audioActual.onended=null; audioActual=null; }
   if('speechSynthesis' in window) speechSynthesis.cancel();
 }
-function decirFrase(a){
-  if(esCancion(a) || !a.onom) return;
-  const frase = a.nombre + ' hace ' + a.onom;
+// Reproduce un archivo y llama a `luego` al terminar (o si falla)
+function tocar(src, luego, siFalla){
+  const au = nuevoAudio(src);
+  au.onended = ()=> luego && luego();
+  au.onerror = ()=> (siFalla||luego) && (siFalla||luego)();
+  au.play().catch(()=> (siFalla||luego) && (siFalla||luego)());
+}
+// Secuencia: efecto → "La vaca hace…" → efecto otra vez.
+// Los archivos -voz.mp3 están cortados justo tras "hace…"; si no existe, lo dice la voz del móvil.
+function secuencia(a){
+  if(esCancion(a) || !a.onom){ if(a.file) tocar(a.file); else hablar(a.nombre); return; }
   const voz = a.voz || (a.file ? a.file.replace(/\.mp3$/i, '-voz.mp3') : null);
-  if(!voz){ hablar(frase); return; }
-  const au = nuevoAudio(voz);
-  au.onerror = ()=> hablar(frase);
-  au.play().catch(()=> hablar(frase));
+  const frase = ()=>{ hablar(a.nombre + ' hace…'); if(a.file) setTimeout(()=>tocar(a.file), 1400); };
+  if(!a.file){ hablar(a.nombre + ' hace ' + a.onom); return; }
+  tocar(a.file, ()=>{
+    if(!voz){ frase(); return; }
+    tocar(voz, ()=> setTimeout(()=>tocar(a.file), 150), frase);
+  }, ()=> hablar(a.nombre + ' hace ' + a.onom));
 }
 function sonar(a){
   // Misma canción otra vez mientras suena → pausa (sirve de "stop" para el niño)
   if(esCancion(a) && ultimo===a && audioActual && !audioActual.paused){ pararTodo(); $('#onom').textContent='⏸'; return; }
   ultimo = a; mostrar(a); pararTodo();
-  const arrancar = ()=>{
-    if(a.file){
-      const au = nuevoAudio(a.file);
-      au.onended = ()=> decirFrase(a);
-      au.onerror = ()=> decirFrase(a);
-      au.play().catch(()=> decirFrase(a));
-    } else decirFrase(a);
-  };
-  if(cfg.plop){ plop(); setTimeout(arrancar, 230); } else arrancar();
+  if(cfg.plop){ plop(); setTimeout(()=>secuencia(a), 230); } else secuencia(a);
 }
 
 /* ---------- Identificar tarjeta ---------- */
@@ -288,7 +290,11 @@ function onTag(uid, textos){
   }
   const a = resolver(uid, textos);
   if(a){ estado('Leyendo…', 'ok'); sonar(a); }
-  else { estado('Tarjeta sin asignar', 'warn'); plop(); $('#emoji').textContent='❓'; $('#nombre').textContent='¿Quién soy?'; $('#onom').textContent='Usa "Asignar"'; hablar('Esta tarjeta todavía no tiene sonido'); }
+  else {
+    estado('Tarjeta sin asignar', 'warn'); plop(); pararTodo();
+    $('#emoji').textContent='❓'; $('#nombre').textContent='¿Quién soy?'; $('#onom').textContent='Usa "Asignar"';
+    setTimeout(()=> tocar('sonidos/sin-asignar.mp3', null, ()=> hablar('Esta tarjeta todavía no tiene sonido')), 230);
+  }
 }
 
 /* ---------- Web NFC ---------- */
