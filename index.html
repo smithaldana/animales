@@ -24,13 +24,15 @@
   #onom{font-size:22px;color:var(--mut)}
   .big{width:100%;max-width:420px;padding:18px;border:0;border-radius:16px;font-size:20px;font-weight:700;background:var(--acc);color:#fff;margin-top:20px}
   .big:active{opacity:.8}
-  footer{padding:12px 16px 24px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-  footer button{padding:10px 14px;border:0;border-radius:12px;background:var(--card);color:var(--txt);font-size:15px}
+  footer{padding:12px 16px 24px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  footer button{padding:10px 12px;border:0;border-radius:12px;background:var(--card);color:var(--txt);font-size:14px}
   footer button.on{background:var(--warn);color:#000}
-  #panel{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:flex-end;justify-content:center}
+  #panel{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:flex-end;justify-content:center;z-index:20}
   #panel.show{display:flex}
-  #sheet{background:var(--card);width:100%;max-width:560px;max-height:85vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px}
+  #sheet{background:var(--card);width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px}
   #sheet h2{margin:0 0 10px;font-size:17px}
+  .cat{margin:14px 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);display:flex;align-items:center;gap:8px}
+  .cat::after{content:"";flex:1;height:1px;background:#333a4d}
   .fila{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid #333a4d}
   .fila .e{font-size:34px;width:46px;text-align:center}
   .fila .n{flex:1;text-align:left}
@@ -38,11 +40,15 @@
   .fila button{padding:8px 12px;border:0;border-radius:10px;background:var(--acc);color:#fff}
   .fila button.del{background:#444c63}
   .add{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-  .add input{padding:10px;border-radius:10px;border:1px solid #444c63;background:#1b1f2a;color:var(--txt);font-size:15px}
-  .add input.full{grid-column:1/-1}
+  .add input,.add select{padding:10px;border-radius:10px;border:1px solid #444c63;background:#1b1f2a;color:var(--txt);font-size:15px}
+  .add .full{grid-column:1/-1}
   .add button{grid-column:1/-1;padding:12px;border:0;border-radius:12px;background:var(--ok);color:#000;font-weight:700}
+  .sec{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .sec button{flex:1;padding:12px;border:0;border-radius:12px;background:#444c63;color:#fff;font-size:14px}
+  .sec button.acc{background:var(--acc)}
   #cerrar{width:100%;padding:12px;margin-top:10px;border:0;border-radius:12px;background:#444c63;color:#fff}
   #log{font-size:12px;color:var(--mut);max-width:420px;margin-top:14px;word-break:break-all}
+  .ayuda{font-size:12px;color:var(--mut);background:#1b1f2a;border-radius:10px;padding:10px;margin-top:10px;line-height:1.4}
   /* Modo niño: pantalla negra, sin nada que mirar */
   #nino{position:fixed;inset:0;background:#000;display:none;z-index:50;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   #nino.show{display:block}
@@ -52,6 +58,7 @@
   @keyframes aro{0%{opacity:.5;transform:scale(.6)}100%{opacity:0;transform:scale(1.6)}}
   #nino .salir{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#555;font-size:14px;opacity:0;transition:opacity .3s}
   #nino.presionando .salir{opacity:1}
+  #latido{position:absolute;left:0;top:0;width:1px;height:1px;background:#000;opacity:.01}
 </style>
 </head>
 <body>
@@ -69,90 +76,156 @@
 </main>
 
 <footer>
-  <button id="btnAsignar">🏷️ Asignar tarjeta</button>
-  <button id="btnLista">📋 Animales</button>
+  <button id="btnAsignar">🏷️ Asignar</button>
+  <button id="btnLista">📋 Tarjetas</button>
   <button id="btnRepetir">🔁 Repetir</button>
   <button id="btnNino">🌙 Modo niño</button>
+  <button id="btnAjustes">⚙️</button>
 </footer>
-
-<div id="nino">
-  <div class="aro" id="aro"></div>
-  <div class="salir">Mantén pulsado para salir…</div>
-  <div class="pista">Modo niño · mantén pulsado 3 s para salir</div>
-</div>
 
 <div id="panel">
   <div id="sheet">
-    <h2 id="sheetTitulo">Animales</h2>
+    <h2 id="sheetTitulo">Tarjetas</h2>
     <div id="lista"></div>
-    <div class="add">
-      <input id="aEmoji" placeholder="Emoji (🚗)">
-      <input id="aNombre" placeholder="Nombre (coche)">
-      <input id="aOnom" class="full" placeholder="Sonido hablado (brum brum)">
-      <input id="aFile" class="full" placeholder="Archivo mp3 opcional (sonidos/coche.mp3)">
+    <div id="formAdd" class="add">
+      <select id="aCat" class="full">
+        <option value="animales">🐾 Animales</option>
+        <option value="vehiculos">🚗 Vehículos</option>
+        <option value="musica">🎵 Instrumentos</option>
+        <option value="canciones">🎶 Canciones</option>
+        <option value="otros">⭐ Otros</option>
+      </select>
+      <input id="aEmoji" placeholder="Emoji (🚂)">
+      <input id="aNombre" placeholder="Nombre (El tren)">
+      <input id="aOnom" class="full" placeholder="Sonido hablado (chu chu) · vacío en canciones">
+      <input id="aFile" class="full" placeholder="Archivo mp3 (sonidos/tren.mp3)">
       <button id="btnAdd">+ Añadir</button>
+    </div>
+    <div id="ajustes" style="display:none">
+      <div class="ayuda">
+        <b>Pasar la configuración a otro móvil</b><br>
+        Exporta aquí un archivo con todas las tarjetas, sus asignaciones y los ajustes; envíalo por WhatsApp o Drive al otro móvil, abre allí esta misma página e impórtalo. Las tarjetas físicas funcionarán sin volver a asignarlas.
+      </div>
+      <div class="sec">
+        <button class="acc" id="btnExport">⬇️ Exportar</button>
+        <button id="btnImport">⬆️ Importar</button>
+        <input type="file" id="fileImport" accept="application/json,.json" hidden>
+      </div>
+      <div class="ayuda" style="margin-top:14px"><b>Sonidos</b></div>
+      <div class="sec">
+        <button id="btnPlop">🔔 Aviso al leer: <span id="plopEstado">sí</span></button>
+        <button id="btnVol">🔊 Volumen: <span id="volEstado">100%</span></button>
+      </div>
+      <div class="sec">
+        <button id="btnReset" style="background:#5a2a2a">Borrar todo y empezar de cero</button>
+      </div>
     </div>
     <button id="cerrar">Cerrar</button>
   </div>
 </div>
 
+<div id="nino">
+  <div id="latido"></div>
+  <div class="aro" id="aro"></div>
+  <div class="salir">Mantén pulsado para salir…</div>
+  <div class="pista">Modo niño · mantén pulsado 3 s para salir</div>
+</div>
+
 <script>
 /* ==========================================================
-   ANIMALES NFC – lector de tarjetas para niños (Web NFC)
+   ANIMALES NFC – tarjetas con sonidos para niños (Web NFC)
    ----------------------------------------------------------
-   · Funciona en Chrome para Android, servido por HTTPS.
-   · Cada tarjeta se reconoce de dos formas:
-       1) Texto NDEF grabado en la tarjeta:  animal:vaca
-       2) Si no lleva texto, por su número de serie (UID),
-          que se asigna desde el botón "Asignar tarjeta".
-   · Sonidos: si existe el mp3 indicado en "file" se reproduce;
-     si no, el móvil lo dice con voz (SpeechSynthesis).
-   · Si se abre con ?a=vaca (tarjeta con URL grabada), suena
-     directamente al pulsar Empezar.
+   · Chrome para Android, servido por HTTPS.
+   · Cada tarjeta se reconoce por texto NDEF "animal:xxx" o,
+     si no lleva texto, por su número de serie (UID) asignado.
+   · Cada elemento: {id, cat, emoji, nombre, onom, file, voz}
+       cat  : animales | vehiculos | musica | canciones | otros
+       file : efecto o canción (mp3)
+       voz  : frase hablada; por defecto <file sin .mp3>-voz.mp3
+       En "canciones" solo suena el archivo, sin frase.
+   · Sonido de confirmación ("plop") sintetizado al leer.
+   · Modo niño: pantalla negra + wake lock + latido para que
+     Android no duerma el NFC. Salir: pulsación larga 3 s.
+   · Exportar / importar toda la configuración en JSON.
    ========================================================== */
 
-const ANIMALES_BASE = [
-  {id:'vaca',    emoji:'🐮', nombre:'La vaca',    onom:'muuu',        file:'sonidos/vaca.mp3'},
-  {id:'perro',   emoji:'🐶', nombre:'El perro',   onom:'guau guau',   file:'sonidos/perro.mp3'},
-  {id:'gato',    emoji:'🐱', nombre:'El gato',    onom:'miau',        file:'sonidos/gato.mp3'},
-  {id:'cerdo',   emoji:'🐷', nombre:'El cerdo',   onom:'oinc oinc',   file:'sonidos/cerdo.mp3'},
-  {id:'oveja',   emoji:'🐑', nombre:'La oveja',   onom:'beee',        file:'sonidos/oveja.mp3'},
-  {id:'gallo',   emoji:'🐓', nombre:'El gallo',   onom:'kikirikí',    file:'sonidos/gallo.mp3'},
-  {id:'pato',    emoji:'🦆', nombre:'El pato',    onom:'cuac cuac',   file:'sonidos/pato.mp3'},
-  {id:'caballo', emoji:'🐴', nombre:'El caballo', onom:'hiiii',       file:'sonidos/caballo.mp3'},
-  {id:'leon',    emoji:'🦁', nombre:'El león',    onom:'grrroar',     file:'sonidos/leon.mp3'},
-  {id:'elefante',emoji:'🐘', nombre:'El elefante',onom:'tuuuu',       file:'sonidos/elefante.mp3'},
-  {id:'rana',    emoji:'🐸', nombre:'La rana',    onom:'croac croac', file:'sonidos/rana.mp3'},
-  {id:'gallina', emoji:'🐔', nombre:'La gallina', onom:'coc coc',     file:'sonidos/gallina.mp3'},
-  {id:'mono',    emoji:'🐵', nombre:'El mono',    onom:'uh uh ah ah', file:'sonidos/mono.mp3'},
-  {id:'pajaro',  emoji:'🐦', nombre:'El pájaro',  onom:'pío pío',     file:'sonidos/pajaro.mp3'},
-  {id:'buho',    emoji:'🦉', nombre:'El búho',    onom:'uh uh',       file:'sonidos/buho.mp3'},
-  {id:'lobo',    emoji:'🐺', nombre:'El lobo',    onom:'auuuu',       file:'sonidos/lobo.mp3'},
-  {id:'burro',   emoji:'🫏', nombre:'El burro',   onom:'iii-aaa',     file:'sonidos/burro.mp3'},
-  {id:'abeja',   emoji:'🐝', nombre:'La abeja',   onom:'bzzz',        file:'sonidos/abeja.mp3'},
-  {id:'coche',   emoji:'🚗', nombre:'El coche',   onom:'brum brum',   file:'sonidos/coche.mp3'},
+const CATS = {animales:'🐾 Animales', vehiculos:'🚗 Vehículos', musica:'🎵 Instrumentos', canciones:'🎶 Canciones', otros:'⭐ Otros'};
+
+const BASE = [
+  // Animales (efecto + frase ya en sonidos/)
+  {id:'vaca',    cat:'animales', emoji:'🐮', nombre:'La vaca',    onom:'muuu',        file:'sonidos/vaca.mp3'},
+  {id:'perro',   cat:'animales', emoji:'🐶', nombre:'El perro',   onom:'guau guau',   file:'sonidos/perro.mp3'},
+  {id:'gato',    cat:'animales', emoji:'🐱', nombre:'El gato',    onom:'miau',        file:'sonidos/gato.mp3'},
+  {id:'cerdo',   cat:'animales', emoji:'🐷', nombre:'El cerdo',   onom:'oinc oinc',   file:'sonidos/cerdo.mp3'},
+  {id:'oveja',   cat:'animales', emoji:'🐑', nombre:'La oveja',   onom:'beee',        file:'sonidos/oveja.mp3'},
+  {id:'gallo',   cat:'animales', emoji:'🐓', nombre:'El gallo',   onom:'kikirikí',    file:'sonidos/gallo.mp3'},
+  {id:'pato',    cat:'animales', emoji:'🦆', nombre:'El pato',    onom:'cuac cuac',   file:'sonidos/pato.mp3'},
+  {id:'caballo', cat:'animales', emoji:'🐴', nombre:'El caballo', onom:'hiiii',       file:'sonidos/caballo.mp3'},
+  {id:'gallina', cat:'animales', emoji:'🐔', nombre:'La gallina', onom:'coc coc',     file:'sonidos/gallina.mp3'},
+  {id:'leon',    cat:'animales', emoji:'🦁', nombre:'El león',    onom:'grrroar',     file:'sonidos/leon.mp3'},
+  {id:'elefante',cat:'animales', emoji:'🐘', nombre:'El elefante',onom:'tuuuu',       file:'sonidos/elefante.mp3'},
+  {id:'mono',    cat:'animales', emoji:'🐵', nombre:'El mono',    onom:'uh uh ah ah', file:'sonidos/mono.mp3'},
+  {id:'rana',    cat:'animales', emoji:'🐸', nombre:'La rana',    onom:'croac croac', file:'sonidos/rana.mp3'},
+  {id:'pajaro',  cat:'animales', emoji:'🐦', nombre:'El pájaro',  onom:'pío pío',     file:'sonidos/pajaro.mp3'},
+  {id:'buho',    cat:'animales', emoji:'🦉', nombre:'El búho',    onom:'uh uh',       file:'sonidos/buho.mp3'},
+  {id:'lobo',    cat:'animales', emoji:'🐺', nombre:'El lobo',    onom:'auuuu',       file:'sonidos/lobo.mp3'},
+  {id:'burro',   cat:'animales', emoji:'🫏', nombre:'El burro',   onom:'iii-aaa',     file:'sonidos/burro.mp3'},
+  {id:'abeja',   cat:'animales', emoji:'🐝', nombre:'La abeja',   onom:'bzzz',        file:'sonidos/abeja.mp3'},
+  // Vehículos (sin audio aún: usa la voz del móvil hasta que subas los mp3)
+  {id:'coche',   cat:'vehiculos', emoji:'🚗', nombre:'El coche',   onom:'brum brum',   file:'sonidos/coche.mp3'},
+  {id:'tren',    cat:'vehiculos', emoji:'🚂', nombre:'El tren',    onom:'chu chu',     file:'sonidos/tren.mp3'},
+  {id:'moto',    cat:'vehiculos', emoji:'🏍️', nombre:'La moto',    onom:'brrrum',      file:'sonidos/moto.mp3'},
+  {id:'avion',   cat:'vehiculos', emoji:'✈️', nombre:'El avión',   onom:'fiuuum',      file:'sonidos/avion.mp3'},
+  {id:'tractor', cat:'vehiculos', emoji:'🚜', nombre:'El tractor', onom:'toc toc toc', file:'sonidos/tractor.mp3'},
+  {id:'barco',   cat:'vehiculos', emoji:'🚢', nombre:'El barco',   onom:'tuuu tuuu',   file:'sonidos/barco.mp3'},
+  // Instrumentos
+  {id:'tambor',  cat:'musica', emoji:'🥁', nombre:'El tambor',   onom:'pom pom',     file:'sonidos/tambor.mp3'},
+  {id:'guitarra',cat:'musica', emoji:'🎸', nombre:'La guitarra', onom:'tran tran',   file:'sonidos/guitarra.mp3'},
+  {id:'piano',   cat:'musica', emoji:'🎹', nombre:'El piano',    onom:'plin plin',   file:'sonidos/piano.mp3'},
+  {id:'trompeta',cat:'musica', emoji:'🎺', nombre:'La trompeta', onom:'tararí',      file:'sonidos/trompeta.mp3'},
+  {id:'maracas', cat:'musica', emoji:'🪇', nombre:'Las maracas', onom:'chiki chiki', file:'sonidos/maracas.mp3'},
+  // Canciones: sube los mp3 a sonidos/canciones/ y añade aquí o desde la app
+  // {id:'granja', cat:'canciones', emoji:'🎶', nombre:'La granja de Pepito', onom:'', file:'sonidos/canciones/granja.mp3'},
 ];
 
-const LS_ANIMALES = 'nfc_animales', LS_MAPA = 'nfc_mapa';
-let animales = cargar(LS_ANIMALES, ANIMALES_BASE);
-// Incorporar animales nuevos de la lista base que aún no estén guardados
-ANIMALES_BASE.forEach(b=>{ if(!animales.some(a=>a.id===b.id)) animales.push({...b}); });
-let mapa     = cargar(LS_MAPA, {});          // UID -> id
-let ultimo   = null, modoAsignar = false, idPendiente = null, audioActual = null;
-
+const LS_ITEMS='nfc_animales', LS_MAPA='nfc_mapa', LS_CFG='nfc_cfg';
 function cargar(k, def){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch(e){ return def; } }
 function guardar(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+let items = cargar(LS_ITEMS, BASE);
+// Incorporar elementos nuevos de la lista base y completar categoría en los antiguos
+BASE.forEach(b=>{ const e=items.find(a=>a.id===b.id); if(!e) items.push({...b}); else if(!e.cat) e.cat=b.cat; });
+items.forEach(a=>{ if(!a.cat) a.cat='otros'; });
+let mapa = cargar(LS_MAPA, {});                       // UID -> id
+let cfg  = Object.assign({plop:true, vol:1}, cargar(LS_CFG, {}));
+let ultimo=null, modoAsignar=false, idPendiente=null, audioActual=null;
 
 const $ = s => document.querySelector(s);
 const estado = (t, cls='') => { $('#estado').textContent=t; $('#estado').className=cls; };
 const log = t => { $('#log').textContent = t; };
+const porId = id => items.find(x=>x.id===id);
+const esCancion = a => a.cat==='canciones';
+
+/* ---------- Sonido de confirmación (sintetizado, sin archivo) ---------- */
+let actx=null;
+function plop(){
+  if(!cfg.plop) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended') actx.resume();
+    const t=actx.currentTime, o=actx.createOscillator(), g=actx.createGain();
+    o.type='sine'; o.frequency.setValueAtTime(520,t); o.frequency.exponentialRampToValueAtTime(880,t+0.09);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.35*cfg.vol,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.22);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t+0.25);
+  }catch(e){}
+}
 
 /* ---------- Reproducir ---------- */
 function mostrar(a){
   const aro=$('#aro'); aro.classList.remove('pulso'); void aro.offsetWidth; aro.classList.add('pulso');
   $('#emoji').textContent = a.emoji;
   $('#nombre').textContent = a.nombre;
-  $('#onom').textContent = a.onom;
+  $('#onom').textContent = esCancion(a) ? '🎶' : a.onom;
   $('#emoji').classList.add('pop'); setTimeout(()=>$('#emoji').classList.remove('pop'),200);
   if(navigator.vibrate) navigator.vibrate(60);
 }
@@ -160,46 +233,47 @@ function hablar(texto){
   if(!('speechSynthesis' in window)) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(texto);
-  u.lang='es-ES'; u.rate=0.9; u.pitch=1.1;
+  u.lang='es-ES'; u.rate=0.9; u.pitch=1.1; u.volume=cfg.vol;
   speechSynthesis.speak(u);
 }
-// Frase hablada: primero intenta sonidos/<id>-voz.mp3 (ElevenLabs);
-// si no existe o falla, usa la voz del móvil.
+function nuevoAudio(src){ const au=new Audio(src); au.volume=cfg.vol; audioActual=au; return au; }
+function pararTodo(){
+  if(audioActual){ audioActual.pause(); audioActual.onended=null; audioActual=null; }
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+}
 function decirFrase(a){
+  if(esCancion(a) || !a.onom) return;
   const frase = a.nombre + ' hace ' + a.onom;
   const voz = a.voz || (a.file ? a.file.replace(/\.mp3$/i, '-voz.mp3') : null);
   if(!voz){ hablar(frase); return; }
-  const au = new Audio(voz); audioActual = au;
+  const au = nuevoAudio(voz);
   au.onerror = ()=> hablar(frase);
   au.play().catch(()=> hablar(frase));
 }
 function sonar(a){
-  ultimo = a; mostrar(a);
-  if(audioActual){ audioActual.pause(); audioActual=null; }
-  if('speechSynthesis' in window) speechSynthesis.cancel();
-  if(a.file){
-    const au = new Audio(a.file); audioActual = au;
-    au.onended = ()=> decirFrase(a);
-    au.onerror = ()=> decirFrase(a);
-    au.play().catch(()=> decirFrase(a));
-  } else {
-    decirFrase(a);
-  }
+  // Misma canción otra vez mientras suena → pausa (sirve de "stop" para el niño)
+  if(esCancion(a) && ultimo===a && audioActual && !audioActual.paused){ pararTodo(); $('#onom').textContent='⏸'; return; }
+  ultimo = a; mostrar(a); pararTodo();
+  const arrancar = ()=>{
+    if(a.file){
+      const au = nuevoAudio(a.file);
+      au.onended = ()=> decirFrase(a);
+      au.onerror = ()=> decirFrase(a);
+      au.play().catch(()=> decirFrase(a));
+    } else decirFrase(a);
+  };
+  if(cfg.plop){ plop(); setTimeout(arrancar, 230); } else arrancar();
 }
-function porId(id){ return animales.find(x=>x.id===id); }
 
 /* ---------- Identificar tarjeta ---------- */
 function resolver(uid, textos){
-  // 1) texto NDEF "animal:xxx"
   for(const t of textos){
     const m = t.match(/^animal:([a-z0-9_-]+)/i);
     if(m){ const a = porId(m[1].toLowerCase()); if(a) return a; }
   }
-  // 2) UID asignado
   if(uid && mapa[uid]) return porId(mapa[uid]);
   return null;
 }
-
 function onTag(uid, textos){
   log('UID: ' + (uid||'?') + (textos.length? ' · texto: '+textos.join(' | '):''));
   if(modoAsignar && idPendiente && uid){
@@ -211,22 +285,18 @@ function onTag(uid, textos){
   }
   const a = resolver(uid, textos);
   if(a){ estado('Leyendo…', 'ok'); sonar(a); }
-  else { estado('Tarjeta sin asignar', 'warn'); $('#emoji').textContent='❓'; $('#nombre').textContent='¿Quién soy?'; $('#onom').textContent='Usa "Asignar tarjeta"'; hablar('Esta tarjeta todavía no tiene animal'); }
+  else { estado('Tarjeta sin asignar', 'warn'); plop(); $('#emoji').textContent='❓'; $('#nombre').textContent='¿Quién soy?'; $('#onom').textContent='Usa "Asignar"'; hablar('Esta tarjeta todavía no tiene sonido'); }
 }
 
 /* ---------- Web NFC ---------- */
 async function empezar(){
-  // desbloquea audio y voz con el gesto del usuario
-  hablar(' ');
-  const url = new URL(location.href);
-  const directo = url.searchParams.get('a');
+  hablar(' '); plop();   // desbloquea audio con el gesto del usuario
+  const directo = new URL(location.href).searchParams.get('a');
   if(directo && porId(directo)) sonar(porId(directo));
-
   if(!('NDEFReader' in window)){
     estado('Este navegador no tiene Web NFC', 'err');
     log('Usa Chrome en Android. En iPhone, graba una URL con ?a=vaca en la tarjeta.');
-    $('#btnStart').style.display='none';
-    return;
+    $('#btnStart').style.display='none'; return;
   }
   try{
     const reader = new NDEFReader();
@@ -237,83 +307,125 @@ async function empezar(){
     reader.onreading = ev => {
       const textos = [];
       for(const r of ev.message.records){
-        if(r.recordType==='text'){
-          try{ textos.push(new TextDecoder(r.encoding||'utf-8').decode(r.data)); }catch(e){}
-        } else if(r.recordType==='url'){
-          try{ const u = new TextDecoder().decode(r.data); const m=u.match(/[?&]a=([a-z0-9_-]+)/i); if(m) textos.push('animal:'+m[1]); }catch(e){}
-        }
+        if(r.recordType==='text'){ try{ textos.push(new TextDecoder(r.encoding||'utf-8').decode(r.data)); }catch(e){} }
+        else if(r.recordType==='url'){ try{ const u=new TextDecoder().decode(r.data); const m=u.match(/[?&]a=([a-z0-9_-]+)/i); if(m) textos.push('animal:'+m[1]); }catch(e){} }
       }
       onTag(ev.serialNumber || null, textos);
     };
-  }catch(e){
-    estado('NFC no disponible: ' + e.message, 'err');
-  }
+  }catch(e){ estado('NFC no disponible: ' + e.message, 'err'); }
 }
 
 /* ---------- UI ---------- */
 $('#btnStart').onclick = empezar;
 $('#btnRepetir').onclick = ()=> ultimo && sonar(ultimo);
-
 $('#btnAsignar').onclick = ()=>{
   if(modoAsignar){ modoAsignar=false; idPendiente=null; $('#btnAsignar').classList.remove('on'); estado('Escuchando tarjetas…','ok'); return; }
-  abrirPanel(true);
+  abrirPanel('asignar');
 };
-$('#btnLista').onclick = ()=> abrirPanel(false);
+$('#btnLista').onclick = ()=> abrirPanel('lista');
+$('#btnAjustes').onclick = ()=> abrirPanel('ajustes');
 $('#cerrar').onclick = ()=> $('#panel').classList.remove('show');
 
-function abrirPanel(asignando){
-  $('#sheetTitulo').textContent = asignando ? 'Elige el animal y luego acerca la tarjeta' : 'Animales (toca para probar)';
+function abrirPanel(modo){
+  const asignando = modo==='asignar';
+  $('#sheetTitulo').textContent = modo==='ajustes' ? 'Ajustes' : asignando ? 'Elige y luego acerca la tarjeta' : 'Tarjetas (toca ▶ para probar)';
+  $('#formAdd').style.display = modo==='lista' ? 'grid' : 'none';
+  $('#ajustes').style.display = modo==='ajustes' ? 'block' : 'none';
+  $('#lista').style.display = modo==='ajustes' ? 'none' : 'block';
+  if(modo==='ajustes'){ refrescarAjustes(); $('#panel').classList.add('show'); return; }
+
   const L = $('#lista'); L.innerHTML='';
-  animales.forEach(a=>{
-    const d=document.createElement('div'); d.className='fila';
-    const n = Object.values(mapa).filter(x=>x===a.id).length;
-    d.innerHTML = `<div class="e">${a.emoji}</div><div class="n">${a.nombre}<small>${a.onom}${n?' · '+n+' tarjeta'+(n>1?'s':''):''}</small></div>`;
-    const b=document.createElement('button');
-    b.textContent = asignando ? 'Elegir' : '▶';
-    b.onclick = ()=>{
-      if(asignando){
-        modoAsignar=true; idPendiente=a.id; $('#btnAsignar').classList.add('on');
-        estado('Acerca la tarjeta para ' + a.nombre, 'warn');
-        $('#panel').classList.remove('show');
-      } else sonar(a);
-    };
-    d.appendChild(b);
-    if(!asignando){
-      const x=document.createElement('button'); x.textContent='🗑'; x.className='del';
-      x.onclick=()=>{ if(confirm('¿Borrar '+a.nombre+'?')){ animales=animales.filter(z=>z.id!==a.id); for(const k in mapa) if(mapa[k]===a.id) delete mapa[k]; guardar(LS_ANIMALES,animales); guardar(LS_MAPA,mapa); abrirPanel(false);} };
-      d.appendChild(x);
-    }
-    L.appendChild(d);
+  Object.keys(CATS).forEach(cat=>{
+    const grupo = items.filter(a=>a.cat===cat); if(!grupo.length) return;
+    const h=document.createElement('div'); h.className='cat'; h.textContent=CATS[cat]; L.appendChild(h);
+    grupo.forEach(a=>{
+      const d=document.createElement('div'); d.className='fila';
+      const n = Object.values(mapa).filter(x=>x===a.id).length;
+      d.innerHTML = `<div class="e">${a.emoji}</div><div class="n">${a.nombre}<small>${esCancion(a)?'canción':a.onom}${n?' · '+n+' tarjeta'+(n>1?'s':''):''}</small></div>`;
+      const b=document.createElement('button');
+      b.textContent = asignando ? 'Elegir' : '▶';
+      b.onclick = ()=>{
+        if(asignando){
+          modoAsignar=true; idPendiente=a.id; $('#btnAsignar').classList.add('on');
+          estado('Acerca la tarjeta para ' + a.nombre, 'warn');
+          $('#panel').classList.remove('show');
+        } else sonar(a);
+      };
+      d.appendChild(b);
+      if(!asignando){
+        const x=document.createElement('button'); x.textContent='🗑'; x.className='del';
+        x.onclick=()=>{ if(confirm('¿Borrar '+a.nombre+'?')){ items=items.filter(z=>z.id!==a.id); for(const k in mapa) if(mapa[k]===a.id) delete mapa[k]; guardar(LS_ITEMS,items); guardar(LS_MAPA,mapa); abrirPanel('lista');} };
+        d.appendChild(x);
+      }
+      L.appendChild(d);
+    });
   });
   $('#panel').classList.add('show');
 }
 
+$('#aCat').onchange = ()=>{ const c=$('#aCat').value; $('#aFile').placeholder = c==='canciones' ? 'Archivo mp3 (sonidos/canciones/nombre.mp3)' : 'Archivo mp3 (sonidos/nombre.mp3)'; };
 $('#btnAdd').onclick = ()=>{
-  const nombre=$('#aNombre').value.trim(), emoji=$('#aEmoji').value.trim()||'⭐', onom=$('#aOnom').value.trim(), file=$('#aFile').value.trim();
+  const cat=$('#aCat').value, nombre=$('#aNombre').value.trim(), emoji=$('#aEmoji').value.trim()||(cat==='canciones'?'🎶':'⭐'), onom=$('#aOnom').value.trim(), file=$('#aFile').value.trim();
   if(!nombre) return alert('Pon un nombre');
-  const id = nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-');
+  if(cat==='canciones' && !file) return alert('Una canción necesita su archivo mp3');
+  const id = nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/^(el|la|los|las)\s+/,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   if(porId(id)) return alert('Ya existe');
-  animales.push({id, emoji, nombre: nombre.charAt(0).toUpperCase()+nombre.slice(1), onom: onom||nombre, file: file||null});
-  guardar(LS_ANIMALES, animales);
+  items.push({id, cat, emoji, nombre: nombre.charAt(0).toUpperCase()+nombre.slice(1), onom: cat==='canciones' ? '' : (onom||nombre), file: file||null});
+  guardar(LS_ITEMS, items);
   ['#aNombre','#aEmoji','#aOnom','#aFile'].forEach(s=>$(s).value='');
-  abrirPanel(false);
+  abrirPanel('lista');
 };
 
+/* ---------- Ajustes: exportar / importar / sonido ---------- */
+function refrescarAjustes(){
+  $('#plopEstado').textContent = cfg.plop ? 'sí' : 'no';
+  $('#volEstado').textContent = Math.round(cfg.vol*100)+'%';
+}
+$('#btnPlop').onclick = ()=>{ cfg.plop=!cfg.plop; guardar(LS_CFG,cfg); refrescarAjustes(); if(cfg.plop) plop(); };
+$('#btnVol').onclick = ()=>{ const pasos=[1,0.7,0.4,0.2]; const i=pasos.indexOf(cfg.vol); cfg.vol=pasos[(i+1)%pasos.length]; guardar(LS_CFG,cfg); refrescarAjustes(); plop(); };
+$('#btnExport').onclick = ()=>{
+  const data={version:2, fecha:new Date().toISOString(), items, mapa, cfg};
+  const blob=new Blob([JSON.stringify(data,null,1)],{type:'application/json'});
+  const file=new File([blob],'animales-nfc-config.json',{type:'application/json'});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    navigator.share({files:[file], title:'Animales NFC – configuración'}).catch(()=>descargar(blob));
+  } else descargar(blob);
+};
+function descargar(blob){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='animales-nfc-config.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); }
+$('#btnImport').onclick = ()=> $('#fileImport').click();
+$('#fileImport').onchange = e=>{
+  const f=e.target.files[0]; if(!f) return;
+  f.text().then(t=>{
+    const d=JSON.parse(t);
+    if(!d.items || !d.mapa) throw new Error('Archivo no válido');
+    const n=Object.keys(d.mapa).length;
+    if(!confirm(`Importar ${d.items.length} tarjetas y ${n} asignaciones. Se sustituirá la configuración actual. ¿Continuar?`)) return;
+    items=d.items; mapa=d.mapa; cfg=Object.assign({plop:true,vol:1}, d.cfg||{});
+    guardar(LS_ITEMS,items); guardar(LS_MAPA,mapa); guardar(LS_CFG,cfg);
+    refrescarAjustes(); alert('Importado correctamente');
+  }).catch(err=>alert('No se pudo importar: '+err.message));
+  e.target.value='';
+};
+$('#btnReset').onclick = ()=>{ if(confirm('¿Borrar todas las tarjetas y asignaciones de este móvil?')){ localStorage.removeItem(LS_ITEMS); localStorage.removeItem(LS_MAPA); localStorage.removeItem(LS_CFG); location.reload(); } };
+
 /* ---------- Modo niño ---------- */
-let wakeLock=null;
+let wakeLock=null, latidoTimer=null;
 async function pedirWakeLock(){
   try{ if('wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release',()=>{wakeLock=null;}); } }catch(e){}
 }
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && $('#nino').classList.contains('show')) pedirWakeLock(); });
-
+// Latido: cambio imperceptible cada 20 s para que Android no considere la pantalla "estática" y mantenga el NFC activo
+function latir(){ const l=$('#latido'); l.style.opacity = l.style.opacity==='0.02' ? '0.01' : '0.02'; if(!wakeLock) pedirWakeLock(); }
 function entrarNino(){
   $('#nino').classList.add('show');
   pedirWakeLock();
+  latidoTimer=setInterval(latir,20000);
   if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{});
   if(screen.orientation && screen.orientation.lock) screen.orientation.lock('portrait').catch(()=>{});
 }
 function salirNino(){
   $('#nino').classList.remove('show','presionando');
+  clearInterval(latidoTimer); latidoTimer=null;
   if(wakeLock){ wakeLock.release().catch(()=>{}); wakeLock=null; }
   if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
 }
@@ -321,7 +433,6 @@ $('#btnNino').onclick=()=>{
   if($('#btnStart').style.display!=='none'){ alert('Pulsa primero "Empezar" para activar el NFC.'); return; }
   entrarNino();
 };
-// salir con pulsación larga de 3 s
 let tPress=null;
 const nino=$('#nino');
 const inicioPress=e=>{ e.preventDefault(); nino.classList.add('presionando'); tPress=setTimeout(salirNino,3000); };
