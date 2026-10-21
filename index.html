@@ -127,8 +127,8 @@
 <div id="nino">
   <div id="latido"></div>
   <div class="aro" id="aro"></div>
-  <div class="salir">Mantén pulsado para salir…</div>
-  <div class="pista">Modo niño · mantén pulsado 3 s para salir</div>
+  <div class="salir">Mantén los dos dedos 3 s…</div>
+  <div class="pista">Para salir: un dedo en cada esquina superior, 3 s</div>
 </div>
 
 <script>
@@ -433,13 +433,33 @@ $('#btnNino').onclick=()=>{
   if($('#btnStart').style.display!=='none'){ alert('Pulsa primero "Empezar" para activar el NFC.'); return; }
   entrarNino();
 };
+// Salir: dos dedos a la vez, uno en cada esquina SUPERIOR, mantenidos 3 s.
+// Cualquier otro toque (agarrar el móvil, manotazos) no hace nada.
 let tPress=null;
 const nino=$('#nino');
-const inicioPress=e=>{ e.preventDefault(); nino.classList.add('presionando'); tPress=setTimeout(salirNino,3000); };
-const finPress=()=>{ nino.classList.remove('presionando'); clearTimeout(tPress); tPress=null; };
-nino.addEventListener('touchstart',inicioPress,{passive:false});
-nino.addEventListener('touchend',finPress); nino.addEventListener('touchcancel',finPress);
-nino.addEventListener('mousedown',inicioPress); nino.addEventListener('mouseup',finPress); nino.addEventListener('mouseleave',finPress);
+const ESQ=90; // px desde el borde que cuenta como "esquina"
+function enEsquinasSuperiores(touches){
+  if(touches.length!==2) return false;
+  const W=innerWidth; let izq=false, der=false;
+  for(const t of touches){
+    if(t.clientY>ESQ) return false;
+    if(t.clientX<ESQ) izq=true; else if(t.clientX>W-ESQ) der=true;
+  }
+  return izq && der;
+}
+function evaluar(e){
+  e.preventDefault();
+  if(enEsquinasSuperiores(e.touches)){
+    if(!tPress){ nino.classList.add('presionando'); tPress=setTimeout(salirNino,3000); }
+  } else { nino.classList.remove('presionando'); clearTimeout(tPress); tPress=null; }
+}
+nino.addEventListener('touchstart',evaluar,{passive:false});
+nino.addEventListener('touchmove',evaluar,{passive:false});
+nino.addEventListener('touchend',evaluar,{passive:false});
+nino.addEventListener('touchcancel',evaluar,{passive:false});
+// En PC (sin táctil): clic largo de 3 s con la tecla Shift pulsada
+nino.addEventListener('mousedown',e=>{ if(e.shiftKey){ nino.classList.add('presionando'); tPress=setTimeout(salirNino,3000);} });
+nino.addEventListener('mouseup',()=>{ nino.classList.remove('presionando'); clearTimeout(tPress); tPress=null; });
 nino.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ---------- PWA ---------- */
