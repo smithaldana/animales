@@ -2,4 +2,4 @@
 
 Animales NFC: tarjetas con sonidos de animales.
 
-`/pletina/` solo redirige a https://smithaldana.github.io/pletina/ (Pletina tiene ahora su propio repositorio).
+`/musica/` solo redirige a https://smithaldana.github.io/musica/ (Pletina tiene ahora su propio repositorio).
