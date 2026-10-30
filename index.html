@@ -108,8 +108,11 @@
       </div>
       <div class="sec">
         <button class="acc" id="btnExport">⬇️ Exportar</button>
-        <button id="btnImport">⬆️ Importar</button>
-        <input type="file" id="fileImport" accept="application/json,.json" hidden>
+        <button id="btnImport">⬆️ Importar archivo</button>
+        <input type="file" id="fileImport" accept="*/*" hidden>
+      </div>
+      <div class="sec">
+        <button id="btnImportTexto">📋 Importar pegando el texto</button>
       </div>
       <div class="ayuda" style="margin-top:14px"><b>Sonidos</b></div>
       <div class="sec">
@@ -402,9 +405,8 @@ $('#btnExport').onclick = ()=>{
 };
 function descargar(blob){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='animales-nfc-config.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); }
 $('#btnImport').onclick = ()=> $('#fileImport').click();
-$('#fileImport').onchange = e=>{
-  const f=e.target.files[0]; if(!f) return;
-  f.text().then(t=>{
+function importarTexto(t){
+  try{
     const d=JSON.parse(t);
     if(!d.items || !d.mapa) throw new Error('Archivo no válido');
     const n=Object.keys(d.mapa).length;
@@ -412,8 +414,16 @@ $('#fileImport').onchange = e=>{
     items=d.items; mapa=d.mapa; cfg=Object.assign({plop:true,vol:1}, d.cfg||{});
     guardar(LS_ITEMS,items); guardar(LS_MAPA,mapa); guardar(LS_CFG,cfg);
     refrescarAjustes(); alert('Importado correctamente');
-  }).catch(err=>alert('No se pudo importar: '+err.message));
+  }catch(err){ alert('No se pudo importar: '+err.message); }
+}
+$('#fileImport').onchange = e=>{
+  const f=e.target.files[0]; if(!f) return;
+  f.text().then(importarTexto);
   e.target.value='';
+};
+$('#btnImportTexto').onclick = ()=>{
+  const t=prompt('Abre el archivo en el otro móvil, copia todo su contenido y pégalo aquí:');
+  if(t && t.trim()) importarTexto(t.trim());
 };
 $('#btnReset').onclick = ()=>{ if(confirm('¿Borrar todas las tarjetas y asignaciones de este móvil?')){ localStorage.removeItem(LS_ITEMS); localStorage.removeItem(LS_MAPA); localStorage.removeItem(LS_CFG); location.reload(); } };
 

@@ -1,6 +1,6 @@
 // Service worker: la app funciona sin conexión.
 // Al cambiar sonidos o la página, sube VERSION para que los móviles descarguen lo nuevo.
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CACHE = 'animales-' + VERSION;
 const BASE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
