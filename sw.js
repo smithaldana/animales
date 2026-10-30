@@ -10,7 +10,8 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    // Solo borra cachés viejas de esta app: el dominio lo comparte con /pletina/
+    caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('animales-') && k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
