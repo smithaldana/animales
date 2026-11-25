@@ -1,0 +1,390 @@
+{
+ "version": 2,
+ "fecha": "2026-11-25T09:56:55.120Z",
+ "items": [
+  {
+   "id": "vaca",
+   "cat": "animales",
+   "emoji": "🐮",
+   "nombre": "La vaca",
+   "onom": "muuu",
+   "file": "sonidos/vaca.mp3"
+  },
+  {
+   "id": "perro",
+   "cat": "animales",
+   "emoji": "🐶",
+   "nombre": "El perro",
+   "onom": "guau guau",
+   "file": "sonidos/perro.mp3"
+  },
+  {
+   "id": "gato",
+   "cat": "animales",
+   "emoji": "🐱",
+   "nombre": "El gato",
+   "onom": "miau",
+   "file": "sonidos/gato.mp3"
+  },
+  {
+   "id": "cerdo",
+   "cat": "animales",
+   "emoji": "🐷",
+   "nombre": "El cerdo",
+   "onom": "oinc oinc",
+   "file": "sonidos/cerdo.mp3"
+  },
+  {
+   "id": "oveja",
+   "cat": "animales",
+   "emoji": "🐑",
+   "nombre": "La oveja",
+   "onom": "beee",
+   "file": "sonidos/oveja.mp3"
+  },
+  {
+   "id": "gallo",
+   "cat": "animales",
+   "emoji": "🐓",
+   "nombre": "El gallo",
+   "onom": "kikirikí",
+   "file": "sonidos/gallo.mp3"
+  },
+  {
+   "id": "pato",
+   "cat": "animales",
+   "emoji": "🦆",
+   "nombre": "El pato",
+   "onom": "cuac cuac",
+   "file": "sonidos/pato.mp3"
+  },
+  {
+   "id": "caballo",
+   "cat": "animales",
+   "emoji": "🐴",
+   "nombre": "El caballo",
+   "onom": "hiiii",
+   "file": "sonidos/caballo.mp3"
+  },
+  {
+   "id": "gallina",
+   "cat": "animales",
+   "emoji": "🐔",
+   "nombre": "La gallina",
+   "onom": "coc coc",
+   "file": "sonidos/gallina.mp3"
+  },
+  {
+   "id": "leon",
+   "cat": "animales",
+   "emoji": "🦁",
+   "nombre": "El león",
+   "onom": "grrroar",
+   "file": "sonidos/leon.mp3"
+  },
+  {
+   "id": "elefante",
+   "cat": "animales",
+   "emoji": "🐘",
+   "nombre": "El elefante",
+   "onom": "tuuuu",
+   "file": "sonidos/elefante.mp3"
+  },
+  {
+   "id": "mono",
+   "cat": "animales",
+   "emoji": "🐵",
+   "nombre": "El mono",
+   "onom": "uh uh ah ah",
+   "file": "sonidos/mono.mp3"
+  },
+  {
+   "id": "rana",
+   "cat": "animales",
+   "emoji": "🐸",
+   "nombre": "La rana",
+   "onom": "croac croac",
+   "file": "sonidos/rana.mp3"
+  },
+  {
+   "id": "pajaro",
+   "cat": "animales",
+   "emoji": "🐦",
+   "nombre": "El pájaro",
+   "onom": "pío pío",
+   "file": "sonidos/pajaro.mp3"
+  },
+  {
+   "id": "buho",
+   "cat": "animales",
+   "emoji": "🦉",
+   "nombre": "El búho",
+   "onom": "uh uh",
+   "file": "sonidos/buho.mp3"
+  },
+  {
+   "id": "lobo",
+   "cat": "animales",
+   "emoji": "🐺",
+   "nombre": "El lobo",
+   "onom": "auuuu",
+   "file": "sonidos/lobo.mp3"
+  },
+  {
+   "id": "burro",
+   "cat": "animales",
+   "emoji": "🫏",
+   "nombre": "El burro",
+   "onom": "iii-aaa",
+   "file": "sonidos/burro.mp3"
+  },
+  {
+   "id": "abeja",
+   "cat": "animales",
+   "emoji": "🐝",
+   "nombre": "La abeja",
+   "onom": "bzzz",
+   "file": "sonidos/abeja.mp3"
+  },
+  {
+   "id": "coche",
+   "cat": "vehiculos",
+   "emoji": "🚗",
+   "nombre": "El coche",
+   "onom": "brum brum",
+   "file": "sonidos/coche.mp3"
+  },
+  {
+   "id": "tren",
+   "cat": "vehiculos",
+   "emoji": "🚂",
+   "nombre": "El tren",
+   "onom": "chu chu",
+   "file": "sonidos/tren.mp3"
+  },
+  {
+   "id": "moto",
+   "cat": "vehiculos",
+   "emoji": "🏍️",
+   "nombre": "La moto",
+   "onom": "brrrum",
+   "file": "sonidos/moto.mp3"
+  },
+  {
+   "id": "avion",
+   "cat": "vehiculos",
+   "emoji": "✈️",
+   "nombre": "El avión",
+   "onom": "fiuuum",
+   "file": "sonidos/avion.mp3"
+  },
+  {
+   "id": "tractor",
+   "cat": "vehiculos",
+   "emoji": "🚜",
+   "nombre": "El tractor",
+   "onom": "toc toc toc",
+   "file": "sonidos/tractor.mp3"
+  },
+  {
+   "id": "barco",
+   "cat": "vehiculos",
+   "emoji": "🚢",
+   "nombre": "El barco",
+   "onom": "tuuu tuuu",
+   "file": "sonidos/barco.mp3"
+  },
+  {
+   "id": "tambor",
+   "cat": "musica",
+   "emoji": "🥁",
+   "nombre": "El tambor",
+   "onom": "pom pom",
+   "file": "sonidos/tambor.mp3"
+  },
+  {
+   "id": "guitarra",
+   "cat": "musica",
+   "emoji": "🎸",
+   "nombre": "La guitarra",
+   "onom": "tran tran",
+   "file": "sonidos/guitarra.mp3"
+  },
+  {
+   "id": "piano",
+   "cat": "musica",
+   "emoji": "🎹",
+   "nombre": "El piano",
+   "onom": "plin plin",
+   "file": "sonidos/piano.mp3"
+  },
+  {
+   "id": "trompeta",
+   "cat": "musica",
+   "emoji": "🎺",
+   "nombre": "La trompeta",
+   "onom": "tararí",
+   "file": "sonidos/trompeta.mp3"
+  },
+  {
+   "id": "maracas",
+   "cat": "musica",
+   "emoji": "🪇",
+   "nombre": "Las maracas",
+   "onom": "chiki chiki",
+   "file": "sonidos/maracas.mp3"
+  },
+  {
+   "id": "pollitos",
+   "cat": "animales",
+   "emoji": "🐥",
+   "nombre": "Los pollitos",
+   "onom": "pío pío",
+   "file": "sonidos/pollitos.mp3"
+  },
+  {
+   "id": "cuervo",
+   "cat": "animales",
+   "emoji": "🐦‍⬛",
+   "nombre": "El cuervo",
+   "onom": "cra cra",
+   "file": "sonidos/cuervo.mp3"
+  },
+  {
+   "id": "tigre",
+   "cat": "animales",
+   "emoji": "🐯",
+   "nombre": "El tigre",
+   "onom": "grrr",
+   "file": "sonidos/tigre.mp3"
+  },
+  {
+   "id": "oso",
+   "cat": "animales",
+   "emoji": "🐻",
+   "nombre": "El oso",
+   "onom": "groar",
+   "file": "sonidos/oso.mp3"
+  },
+  {
+   "id": "paloma",
+   "cat": "animales",
+   "emoji": "🕊️",
+   "nombre": "La paloma",
+   "onom": "cucurrucú",
+   "file": "sonidos/paloma.mp3"
+  },
+  {
+   "id": "cabra",
+   "cat": "animales",
+   "emoji": "🐐",
+   "nombre": "La cabra",
+   "onom": "meee",
+   "file": "sonidos/cabra.mp3"
+  },
+  {
+   "id": "jirafa",
+   "cat": "animales",
+   "emoji": "🦒",
+   "nombre": "La jirafa",
+   "onom": "mmm",
+   "file": "sonidos/jirafa.mp3"
+  },
+  {
+   "id": "pavo",
+   "cat": "animales",
+   "emoji": "🦃",
+   "nombre": "El pavo",
+   "onom": "glu glu",
+   "file": "sonidos/pavo.mp3"
+  },
+  {
+   "id": "raton",
+   "cat": "animales",
+   "emoji": "🐭",
+   "nombre": "El ratón",
+   "onom": "iii iii",
+   "file": "sonidos/raton.mp3"
+  },
+  {
+   "id": "delfin",
+   "cat": "animales",
+   "emoji": "🐬",
+   "nombre": "El delfín",
+   "onom": "iii iii",
+   "file": "sonidos/delfin.mp3"
+  },
+  {
+   "id": "loro",
+   "cat": "animales",
+   "emoji": "🦜",
+   "nombre": "El loro",
+   "onom": "cró cró",
+   "file": "sonidos/loro.mp3"
+  },
+  {
+   "id": "serpiente",
+   "cat": "animales",
+   "emoji": "🐍",
+   "nombre": "La serpiente",
+   "onom": "sssss",
+   "file": "sonidos/serpiente.mp3"
+  },
+  {
+   "id": "gorila",
+   "cat": "animales",
+   "emoji": "🦍",
+   "nombre": "El gorila",
+   "onom": "uh uh uh",
+   "file": "sonidos/gorila.mp3"
+  },
+  {
+   "id": "ambulancia",
+   "cat": "vehiculos",
+   "emoji": "🚑",
+   "nombre": "La ambulancia",
+   "onom": "nino nino",
+   "file": "sonidos/ambulancia.mp3"
+  }
+ ],
+ "mapa": {
+  "04:6f:cb:32:ab:1c:90": "leon",
+  "04:b3:5e:ee:3f:02:89": "elefante",
+  "04:33:6b:ed:3f:02:89": "leon",
+  "04:03:cf:fc:3f:02:89": "burro",
+  "04:53:08:f7:3f:02:89": "lobo",
+  "04:33:f5:f6:3f:02:89": "mono",
+  "04:23:45:fb:3f:02:89": "buho",
+  "04:83:2d:01:40:02:89": "rana",
+  "04:a3:3d:fd:3f:02:89": "abeja",
+  "04:53:86:f5:3f:02:89": "pajaro",
+  "04:13:54:ee:3f:02:89": "cerdo",
+  "04:63:21:f9:3f:02:89": "gallina",
+  "04:23:b4:f3:3f:02:89": "vaca",
+  "04:d3:f9:ee:3f:02:89": "caballo",
+  "04:03:0d:00:40:02:89": "gallo",
+  "04:53:9e:01:40:02:89": "perro",
+  "04:03:06:fe:3f:02:89": "pato",
+  "04:13:bb:f9:3f:02:89": "gato",
+  "04:53:5e:f9:3f:02:89": "oveja",
+  "04:13:3d:f6:3f:02:89": "tigre",
+  "04:f3:56:ee:3f:02:89": "jirafa",
+  "04:43:a8:f8:3f:02:89": "cuervo",
+  "04:c3:19:ed:3f:02:89": "cabra",
+  "04:43:31:fc:3f:02:89": "pollitos",
+  "04:03:77:fe:3f:02:89": "delfin",
+  "04:a3:f3:f5:3f:02:89": "paloma",
+  "04:53:e3:f4:3f:02:89": "oso",
+  "04:f3:dd:f8:3f:02:89": "ambulancia",
+  "04:33:fb:ef:3f:02:89": "serpiente",
+  "04:b3:59:ef:3f:02:89": "coche",
+  "04:c3:ea:f3:3f:02:89": "raton",
+  "04:c3:30:f5:3f:02:89": "pavo",
+  "04:93:b9:fd:3f:02:89": "loro",
+  "04:03:35:f2:3f:02:89": "gorila"
+ },
+ "cfg": {
+  "plop": true,
+  "vol": 1
+ }
+}

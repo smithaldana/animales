@@ -114,6 +114,9 @@
       <div class="sec">
         <button id="btnImportTexto">📋 Importar pegando el texto</button>
       </div>
+      <div class="sec">
+        <button class="acc" id="btnImportNube">☁️ Importar configuración compartida (GitHub)</button>
+      </div>
       <div class="ayuda" style="margin-top:14px"><b>Sonidos</b></div>
       <div class="sec">
         <button id="btnPlop">🔔 Aviso al leer: <span id="plopEstado">sí</span></button>
@@ -434,6 +437,13 @@ $('#fileImport').onchange = e=>{
   const f=e.target.files[0]; if(!f) return;
   f.text().then(importarTexto);
   e.target.value='';
+};
+$('#btnImportNube').onclick = async ()=>{
+  try{
+    const r=await fetch('config.json?t='+Date.now(),{cache:'no-store'});
+    if(!r.ok) throw new Error('No se encontró config.json en el servidor');
+    importarTexto(await r.text());
+  }catch(err){ alert('No se pudo descargar: '+err.message); }
 };
 $('#btnImportTexto').onclick = ()=>{
   const t=prompt('Abre el archivo en el otro móvil, copia todo su contenido y pégalo aquí:');
